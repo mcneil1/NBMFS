@@ -50,8 +50,11 @@ namespace NBMFS
         {
             Tweet tweet = new Tweet();     //make new Tweet object
 
+            //this returns the current path which we can use to access the textwords.csv file
+            string thisPath = Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory()));
+
             //use StreamReader to read from textwords.csv
-            StreamReader fileReader = new StreamReader(File.OpenRead(@"c:\NBMFS\textwords.csv"));
+            StreamReader fileReader = new StreamReader(File.OpenRead(thisPath + "\\textwords.csv"));
 
             while (!fileReader.EndOfStream)     //while the StreamReader is not at the end of file
             {

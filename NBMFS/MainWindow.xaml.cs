@@ -27,7 +27,27 @@ namespace NBMFS
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            //if the file path does not exist then create it
+            string path = @"c:\NBMFS";
+            string smsPath = path + "\\sms.json";
+            string tweetPath = path + "\\tweet.json";
+            string emailPath = path + "\\email.json";
+            string sirPath = path + "\\sir.json";
+            string[] paths = new string[] { smsPath, tweetPath, emailPath, sirPath };
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            foreach (string element in paths)
+            {
+                if (!File.Exists(element))
+                {
+                    File.Create(element);
+                }
+            }
+
         }
 
         //use lists to store values that need to be printed to listviews
@@ -73,24 +93,8 @@ namespace NBMFS
                 //use SMSconstructor to make the message a SMS object
                 SMS sms = SMS.SMSconstructor(HeaderTextBox.Text, SenderTextBox.Text, BodyTextBox.Text);
 
-                //if the file path does not exist then create it
-                string path = @"c:\NBMFS\sms.json";
-                if (!File.Exists(path))
-                {
-                    File.Create(path);
-                }
-
-                //DataContractJsonSerializer allows us to convert the SMS to JSON
-                //use FileStream to write the JSON object to the path
-                DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SMS));
-                using (FileStream fs = new FileStream(path, FileMode.Append))
-                { 
-                    js.WriteObject(fs, sms);
-                    //let the user know the SMS has been serialized and written to a file
-                    MessageBox.Show($"New SMS added to c:\\NBMFS\\sms.json:\n\nHeader: {sms.Header}\nBody: {sms.Body}");
-                    //close FileStream
-                    fs.Close();
-                }
+                //use serialize to turn the SMS into a JSON object and write it to file
+                Serialize(sms);
 
                 //add the message to messages so it may be added to MessageList
                 messages.Add(new Message() { Header = sms.Header, Body = sms.Body });
@@ -149,23 +153,8 @@ namespace NBMFS
                     }
                 }
 
-                //if file path does not exist then create it 
-                string path = @"c:\NBMFS\tweet.json";
-                if (!File.Exists(path))
-                {
-                    File.Create(path);
-                }
-
-                //DataContractJsonSerializer allows us to convert the Tweet to JSON
-                //use FileStream to write the JSON object to the path
-                DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Tweet));
-                using (FileStream fs = new FileStream(path, FileMode.Append))
-                {
-                    js.WriteObject(fs, tweet);
-                    //let user know message has been serialized and added to file and close FileStream
-                    MessageBox.Show($"New Tweet added to c:\\NBMFS\\tweet.json:\n\nHeader: {tweet.Header}\nBody: {tweet.Body}");
-                    fs.Close();
-                }
+                //use serialize to turn the tweet into a JSON object and write it to file
+                Serialize(tweet);
 
                 //add mesage to messages list
                 messages.Add(new Message() { Header = tweet.Header, Body = tweet.Body });
@@ -197,24 +186,8 @@ namespace NBMFS
                     //use SIRConstructor to create a SIR Object from the message 
                     SIR sir = SIR.SIRConstructor(HeaderTextBox.Text, SenderTextBox.Text, SubjectTextBox.Text, BodyTextBox.Text);
 
-                    //create file path if it does not exist
-                    string path = @"c:\NBMFS\sir.json";
-                    if (!File.Exists(path))
-                    {
-                        File.Create(path);
-                    }
-
-
-                    //DataContractJsonSerializer will turn our SIR object into a JSON object
-                    DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SIR));
-                    using (FileStream fs = new FileStream(path, FileMode.Append))
-                    {
-                        //write JSON object to the file path using FileStream, let users know this has happened
-                        //then close FileStream
-                        js.WriteObject(fs, sir);
-                        MessageBox.Show($"New SIR added to c:\\NBMFS\\sir.json:\n\nHeader: {sir.Header}\nBody: {sir.Body}");
-                        fs.Close();
-                    }
+                    //use serialize to turn the SIR into a JSON object and write it to file
+                    Serialize(sir);
 
                     //add the message to messages, add the SIR code and incident to ReportList
                     messages.Add(new Message() { Header = sir.Header, Body = sir.Body });
@@ -238,23 +211,8 @@ namespace NBMFS
                     //make an Email object using EmailConstructor 
                     Email email = Email.EmailConstructor(HeaderTextBox.Text, SenderTextBox.Text, SubjectTextBox.Text, BodyTextBox.Text);
 
-                    //create path if it doesn't exist
-                    string path = @"c:\NBMFS\email.json";
-                    if (!File.Exists(path))
-                    {
-                        File.Create(path);
-                    }
-
-                    //use DataContractJsonSerializer to turn Email into JSON object 
-                    DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Email));
-                    using (FileStream fs = new FileStream(path, FileMode.Append))
-                    {
-                        //write JSON object to file using FileStream, let users know the message has been written to file
-                        //then close FileStream
-                        js.WriteObject(fs, email);
-                        MessageBox.Show($"New Email added to c:\\NBMFS\\email.json:\n\nHeader: {email.Header}\nBody: {email.Body}");
-                        fs.Close();
-                    }
+                    //use serialize to turn the email into a JSON object and write it to file
+                    Serialize(email);
 
                     //add email to messages 
                     messages.Add(new Message() { Header = email.Header, Body = email.Body });
@@ -312,6 +270,69 @@ namespace NBMFS
             {
                 TrendingList.Items.Add(kvp.Key);
             }
+        }
+
+        private void Serialize(SMS sms)
+        {
+            //DataContractJsonSerializer allows us to convert the SMS to JSON
+            //use FileStream to write the JSON object to the path
+            DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SMS));
+                using (FileStream fs = new FileStream(@"c:\NBMFS\sms.json", FileMode.Append))
+                {
+                    js.WriteObject(fs, sms);
+                    //let the user know the SMS has been serialized and written to a file
+                    MessageBox.Show($"New SMS added to c:\\NBMFS\\sms.json:\n\nHeader: {sms.Header}\nBody: {sms.Body}");
+                    //close FileStream
+                    fs.Close();
+                }
+
+        }
+        private void Serialize(Tweet tweet)
+        {
+            //DataContractJsonSerializer allows us to convert the Tweet to JSON
+            //use FileStream to write the JSON object to the path
+            DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Tweet));
+            using (FileStream fs = new FileStream(@"c:\NBMFS\tweet.json", FileMode.Append))
+            {
+                js.WriteObject(fs, tweet);
+                //let the user know the Tweet has been serialized and written to a file
+                MessageBox.Show($"New Tweet added to c:\\NBMFS\\tweet.json:\n\nHeader: {tweet.Header}\nBody: {tweet.Body}");
+                //close FileStream
+                fs.Close();
+            }
+
+        }
+
+        private void Serialize(Email email)
+        {
+            //DataContractJsonSerializer allows us to convert the Email to JSON
+            //use FileStream to write the JSON object to the path
+            DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Email));
+            using (FileStream fs = new FileStream(@"c:\NBMFS\email.json", FileMode.Append))
+            {
+                js.WriteObject(fs, email);
+                //let the user know the Email has been serialized and written to a file
+                MessageBox.Show($"New Email added to c:\\NBMFS\\email.json:\n\nHeader: {email.Header}\nBody: {email.Body}");
+                //close FileStream
+                fs.Close();
+            }
+
+        }
+
+        private void Serialize(SIR sir)
+        {
+            //DataContractJsonSerializer allows us to convert the SIR to JSON
+            //use FileStream to write the JSON object to the path
+            DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SIR));
+            using (FileStream fs = new FileStream(@"c:\NBMFS\sir.json", FileMode.Append))
+            {
+                js.WriteObject(fs, sir);
+                //let the user know the SIR has been serialized and written to a file
+                MessageBox.Show($"New SIR added to c:\\NBMFS\\sir.json:\n\nHeader: {sir.Header}\nBody: {sir.Body}");
+                //close FileStream
+                fs.Close();
+            }
+
         }
 
         //the following buttons make thier respective listView visable and all others hidden
