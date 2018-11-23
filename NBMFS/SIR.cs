@@ -79,7 +79,7 @@ namespace NBMFS
 
             foreach (var m in match)
             {
-                sir.AddURL(m.ToString());     //for any matched urls add url to URLquarantine using AddURL() 
+                URLquarantine.Add(m.ToString());     //for any matched urls add url to URLquarantine using AddURL() 
             }
 
             Regex rgxUrls = new Regex(url);

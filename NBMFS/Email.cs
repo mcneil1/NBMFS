@@ -16,12 +16,17 @@ namespace NBMFS
     {
 
         //URLquarantine is a list for storing all of the URLs that may be included in an email
-        public List<string> URLquarantine = new List<string>();
+        public static List<string> URLquarantine = new List<string> { };
 
-        //AddURL adds a url string to the URLquarantine list  
-        public void AddURL(string url)
+        //ReturnURLs gets all URLS, adds them to a string and returns the string so that URLs can be viewed in a messageBox
+        public string ReturnURLs()
         {
-            URLquarantine.Add(url);
+            string urls = "";
+            foreach(var url in URLquarantine)
+            {
+                urls += url.ToString() + "\n";
+            }
+            return urls;
         }
 
         //EmailValidator checks that the header and sender are correct
@@ -64,7 +69,8 @@ namespace NBMFS
 
             foreach (var m in match)
             {
-                email.AddURL(m.ToString());     //for each URL found add to URLquarantine usind AddURL() 
+                //for each URL found add to URLquarantine usind AddURL() 
+                URLquarantine.Add(m.ToString());
             }
 
             Regex rgxUrls = new Regex(url);

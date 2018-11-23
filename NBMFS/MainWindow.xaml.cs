@@ -368,6 +368,13 @@ namespace NBMFS
             SIRlist.Visibility = Visibility.Hidden;
             MentionList.Visibility = Visibility.Visible;
         }
+
+        private void URLBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Email email = new Email();
+            string urls = email.ReturnURLs();
+            MessageBox.Show("Quarantined URLs:\n" + urls);
+        }
     }
 
 }
